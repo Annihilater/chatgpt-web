@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, onUpdated, ref } from 'vue'
 import MarkdownIt from 'markdown-it'
-import mdKatex from '@traptitech/markdown-it-katex'
+import mdKatex from '@vscode/markdown-it-katex'
 import mila from 'markdown-it-link-attributes'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js/lib/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { t } from '@/locales'
 import { copyToClip } from '@/utils/copy'
@@ -12,6 +12,7 @@ interface Props {
   inversion?: boolean
   error?: boolean
   text?: string
+  images?: string[]
   loading?: boolean
   asRawText?: boolean
 }
@@ -80,20 +81,24 @@ function addCopyEvents() {
     })
   }
 }
+
 function removeCopyEvents() {
   if (textRef.value) {
     const copyBtn = textRef.value.querySelectorAll('.code-block-header__copy')
     copyBtn.forEach((btn) => {
-      btn.removeEventListener('click', () => { })
+      btn.removeEventListener('click', () => {})
     })
   }
 }
+
 onMounted(() => {
   addCopyEvents()
 })
+
 onUpdated(() => {
   addCopyEvents()
 })
+
 onUnmounted(() => {
   removeCopyEvents()
 })
@@ -103,11 +108,11 @@ onUnmounted(() => {
   <div class="text-black" :class="wrapClass">
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion" class="flex items-end">
-        <div v-if="!asRawText" class="w-full markdown-body" v-html="text" />
+        <div v-if="!asRawText" class="w-full markdown-body" :class="{ 'markdown-body-generate': loading }" v-html="text" />
         <div v-else class="w-full whitespace-pre-wrap" v-text="text" />
-        <span v-if="loading" class="dark:text-white w-[4px] h-[20px] block animate-blink" />
       </div>
       <div v-else class="whitespace-pre-wrap" v-text="text" />
+      <img v-for="(v, i) of images" :key="i" :src="`/uploads/${v}`" alt="" width="160px">
     </div>
   </div>
 </template>

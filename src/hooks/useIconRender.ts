@@ -1,9 +1,9 @@
 import { h } from 'vue'
 import { SvgIcon } from '@/components/common'
 
-export const useIconRender = () => {
+export function useIconRender() {
   interface IconConfig {
-    icon?: string
+    icon: string
     color?: string
     fontSize?: number
   }
